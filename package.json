@@ -1,0 +1,29 @@
+{
+  "name": "songzify",
+  "version": "0.0.1",
+  "private": true,
+  "engines": {
+    "node": "0.8.x",
+    "npm": "1.1.x"
+  },
+  "scripts": {
+    "start": "node app",
+    "test": "make test"
+  },
+  "dependencies": {
+    "node.io": "0.4.12",
+    "express": "2.5.x",
+    "express-expose": "0.2.2",
+    "fs": "*",
+    "http": "*",
+    "hbs": "*",
+    "jquery": "1.8.3",
+    "underscore": "*",
+    "socket.io": "~0.9.6",
+    "amqp": ">= 0.1.0",
+    "pg": "0.10.x",
+    "oauth": "0.9.8",
+    "mocha": "1.7.4",
+    "should": "1.2.1"
+  }
+}

@@ -1,0 +1,41 @@
+
+<br><br>
+appName: {{appName}}
+<br><br>
+
+{{#session}}
+
+	SESSION EXISTS
+
+	<br><br>
+
+	loggedIn: 
+
+	{{#loggedIn}}
+		TRUE
+	{{/loggedIn}}
+
+	{{^loggedIn}}
+		FALSE
+	{{/loggedIn}}
+
+	<br><br>
+
+	userId: |{{userId}}|
+
+	<br><br>
+
+	msg: |{{msg}}|
+
+	<br><br>
+
+{{/session}}
+
+{{^session}}
+
+	<br><br>
+	NO SESSION AVAILABLE (7455307)
+	<br><br>
+
+{{/session}}
+

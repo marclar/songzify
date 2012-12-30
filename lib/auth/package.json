@@ -1,0 +1,16 @@
+{
+  "name": "auth",
+  "description": "Common JS functions",
+  "homepage": "http://www.songzify.com",
+  "keywords": [
+    "songzify"
+  ],
+  "author": {
+    "name": "Michael Kane",
+    "email": "mk@mk4p.com"
+  },
+  "repository": {},
+  "main": "main.js",
+  "version": "0.0.1",
+  "readme": "Not written (6623816)"
+}
