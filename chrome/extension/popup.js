@@ -11,7 +11,7 @@ req.open(
         "text=hello%20world&" +
         "safe_search=1&" +  // 1 is "safe"
         "content_type=1&" +  // 1 is "photos only"
-        "sort=relevance&" +  // another good one is "interestingness-desc"
+        "sort=interestingness-desc&" +  // another good one is "interestingness-desc"
         "per_page=20",
     true);
 req.onload = showPhotos;

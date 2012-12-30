@@ -3,6 +3,31 @@
   "version": "1.0",
   "manifest_version": 2,
   "description": "Songzify",
+  "icons": { "128": "icon.128.png" },
+  "background": { "scripts": ["background.js"] },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://www.flickr.com/*",
+        "https://www.flickr.com/*",
+        "http://songza.com/",
+        "https://songza.com/",
+        "http://www.songza.com/*",
+        "https://www.songza.com/*",
+        "http://www.spotify.com/*",
+        "https://www.spotify.com/*",
+        "http://www.songzify.com/*",
+        "https://www.songzify.com/*",
+        "http://www.songzifylickr.com/*",
+        "https://www.songzifylickr.com/*",
+        "http://www.youtube.com/*",
+        "https://www.youtube.com/*"
+      ],
+      "css": ["styles.css"],
+      "js": ["jquery-1.8.3.min.js", "content.js"],
+      "run_at": "document_start"
+    }
+  ],
   "browser_action": {
     "default_icon": "icon.png",
     "default_popup": "popup.html"
@@ -10,8 +35,18 @@
   "permissions": [
     "tabs",
     "http://*.flickr.com/",
+    "https://*.flickr.com/",
+    "http://songza.com/",
+    "https://songza.com/",
     "http://*.songza.com/",
+    "https://*.songza.com/",
     "http://*.spotify.com/",
-    "http://*.youtube.com/"
+    "https://*.spotify.com/",
+    "http://*.songzify.com/",
+    "https://*.songzify.com/",
+    "http://*.songzifylickr.com/",
+    "https://*.songzifylickr.com/",
+    "http://*.youtube.com/",
+    "https://*.youtube.com/"
   ]
 }
