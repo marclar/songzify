@@ -25,6 +25,14 @@ GOTO CASE_%watch%
 
     GOTO END_SWITCH
 
+  :CASE_scss_extension
+
+    ::Sass
+    CD chrome\extension
+    CALL sass --watch styles.scss:styles.css
+
+    GOTO END_SWITCH
+
   ::Invalid input
 
     ECHO First parameter must be coffee, scss, scss_jsdoc, less or jsdoc (No quotes!)

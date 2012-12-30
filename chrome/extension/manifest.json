@@ -8,6 +8,10 @@
     "default_popup": "popup.html"
   },
   "permissions": [
-    "http://api.flickr.com/"
+    "tabs",
+    "http://*.flickr.com/",
+    "http://*.songza.com/",
+    "http://*.spotify.com/",
+    "http://*.youtube.com/"
   ]
 }
