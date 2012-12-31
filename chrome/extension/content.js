@@ -31,7 +31,7 @@ var sfl = {
 			'       ',
 			'     </div>',
 			'	  <div class="spotify">Spotify</div>',
-			'	  <div class="flickr">Flickr (<a onclick="document.getElementById(\'img\').enterFullScreen();">fullscreen</a>)</div>',
+			'	  <div class="flickr">Flickr</div>',
 			'     <div style="clear: both; ">&nbsp;</div>',
 			'   </div>',
 			'',
@@ -285,6 +285,21 @@ sfl.getSpotifyLink = function(song){
 
 
 sfl.bindControls = function(){
+
+	//Bind the image itself
+	$('#songzify #img').click(function(){
+
+		var $img = $(this).toggleClass('on');
+		if($img.length){
+			if($img.hasClass('on')){
+				$img[0].webkitRequestFullScreen();
+			}
+			else{
+				$img[0].webkitCancelFullScreen();
+			}
+		}
+
+	});
 
 	//Bind Songza controls
 	var $songza = $('.sfl-songza');
