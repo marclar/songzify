@@ -10,8 +10,8 @@
       "matches": [
         "http://www.flickr.com/*",
         "https://www.flickr.com/*",
-        "http://songza.com/",
-        "https://songza.com/",
+        "http://songza.com/*",
+        "https://songza.com/*",
         "http://www.songza.com/*",
         "https://www.songza.com/*",
         "http://www.spotify.com/*",
