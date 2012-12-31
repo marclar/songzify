@@ -1,0 +1,70 @@
+#songzify {
+
+	width: 100%; 
+	background: black; 
+	padding: 10px; 
+	color: yellow; 
+	
+	.frame {
+		clear: both; 
+		width: 100%; 
+		height: 400px; 
+		text-align: center; 
+
+		#img {
+			margin: 0 auto; 
+			margin-top: 10px; 
+			border: 10px solid white; 
+		}
+
+	}
+
+	.cols {
+
+		border: 1px solid white; 
+
+		&> div {
+			float: left; 
+			width: 33%; 
+
+			button {
+
+				&.on {
+					color: blue; 
+				}
+
+			}
+
+		}
+
+		.songza {}
+
+		.spotify {
+			background-color: #505050; 
+		}
+
+		.flickr {}
+
+	}
+
+	ul.logs {
+
+		clear: both; 
+		display: block; 
+		position: absolute;
+		left: 5px; 
+		top: 5px; 
+		width: 420px; 
+
+		li {
+			color: yellow; 
+			clear: both; 
+			span {
+				color: #505050; 
+				float: right; 
+			}
+		}
+
+	}
+
+}

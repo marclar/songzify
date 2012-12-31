@@ -2,15 +2,70 @@ var sfl = {
 	ready: false,
 	data: null,
 	song: null,
-	el: null,
 	logs: [],
 	interval: null,
-	song: null
+	slideInterval: null,
+	song: null,
+	photos: [],
+	ui: {
+
+		container: [
+			'<section id="songzify">',
+			'',
+			'   <div class="frame">',
+			'     ',
+			'     <img id="img" src="//www.songzify.com/public/img/clear.gif">',
+			'     ',
+			'   </div>',
+			'',
+			'   <div class="cols">',
+			'	  <div class="songza">',
+			'       ',
+			'       Songza <br><br>',
+			'       ',
+			'       <button data-action="playpause" class="on">Play / Pause</button>',
+			'        ',
+			'       <button data-action="skip">Skip</button>',
+			'        ',
+			'       <button data-action="ewskip">Ew, Skip</button>',
+			'       ',
+			'     </div>',
+			'	  <div class="spotify">Spotify</div>',
+			'	  <div class="flickr">Flickr (<a onclick="document.getElementById(\'img\').enterFullScreen();">fullscreen</a>)</div>',
+			'     <div style="clear: both; ">&nbsp;</div>',
+			'   </div>',
+			'',
+			'   <ul class="logs"></ul>',
+			'',
+			'</section>'
+		]
+	}
 };
 
 function log(msg){
-	if(sfl.el){
-		sfl.el.find('.logs').append('<li>' + msg + '</li>');
+	if(sfl.ready){
+
+		//Use console
+		console.log(msg);
+
+		//Add HTML to page?
+		var $logs = $('#songzify').find('.logs');
+		var $li = $('<li>' + msg + ' <span>' + (new Date()).getTime() + '</span></li>');
+		$logs.append($li);
+		if($logs.find('li:last').html().indexOf('4564773') != -1){
+			
+			//NOTE!! idk why but the interval stops without the log() message within the interval,
+			// but these messages are annoying so hide them.
+			$li.hide(); 
+
+		}
+		
+		//Hide early ones
+		if($logs.find('li:visible').length > 10){
+			var $lis = $logs.find('li:visible');
+			$($lis[0]).hide();
+		}
+
 	}
 	else {
 		var el = 
@@ -18,12 +73,10 @@ function log(msg){
 			var el = $('#songzify');
 			if(el.length){
 				sfl.ready = true;
-				sfl.el = el;
 				sfl.logs.push(msg);
-				for(var i = 0, j = logs.length; i < j; i++){
+				for(var i = 0, j = sfl.logs.length; i < j; i++){
 					log(sfl.logs[i]);
 				}
-				delete sfl.logs;
 
 				//Try to parse data from DOM
 				try{
@@ -40,43 +93,162 @@ function log(msg){
 	}
 }
 
+/**
+	Gets photos from Flickr
+	@return {Object} jQuery Deferred
+*/
+sfl.getPhotos = function(){
 
-sfl.getSongInfo = function(){
+	var $result = $.Deferred();
 
-	log('- sfl.getSongInfo() (9637137)');
+	$.getJSON('http://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=ba85a562d715bf4f03475b533e174ef1&perpage=1000&format=json&nojsoncallback=1').done(function(data){
 
-	if(sfl.ready){
+		if(data && data.photos && data.photos.total && data.photos.total > 0){
+			log('Photos returned from Flickr! (6975966)');
+			sfl.photos = data.photos.photo;
+			$result.resolve(sfl.photos);
+		}
 
-		var $song = sfl.el.find('.szi-current-song:visible');
+	});
 
-		if($song.length){
-			sfl.song = null;
-			var $song = $song.find('.szi-song');
-			var $artist = $song.find('.szi-artist:last');
-			if($song.length && $artist.length && $song.html().length && $artist.html().length){
-				sfl.song = {
-					title: $song.html(),
-					artist: $artist.html()
-				};
+
+	return $result;
+
+};
+
+sfl.getPhotoUrls = function(photo){
+
+	// See: http://www.flickr.com/services/api/misc.urls.html
+	var url = '//www.songzify.com/public/img/clear.gif';
+	var urls = {
+		sq75: '',
+		sq150: '',
+		max240: '',
+		max320: '',
+		max640: '',
+		max800: '',
+		max1024: '',
+		orig: ''
+	};
+
+	//If there's a valid photo parameter,
+	if(photo && photo.farm && photo.server && photo.id && photo.secret){
+
+		//Return flickr URLs for each size
+		url = 'http://farm' + photo.farm + '.static.flickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '_{size}.jpg'
+		for(name in urls){
+			var sizes = ['m','s','t','z','b'];
+			for(var i = 0, j = sizes.length; i < j; i++){
+				urls[name] = url.replace('{size}', sizes[i]);
 			}
 		}
 
 	}
+	else {
 
-	return sfl.song;
+		//Return clear gifs for each size
+		for(name in urls){
+			urls[name] = url;
+		}
+
+	}
+
+	return urls;
 
 };
 
-sfl.pollForSongInfo = function(){
+sfl.showPhoto = function(){
+	if(sfl.photos.length){
+
+		var photo = sfl.photos.pop();
+		if(photo){
+			var urls = sfl.getPhotoUrls(photo);
+
+			//Set the img src
+			log('show this photo! (3285950)');
+			log(JSON.stringify(photo));
+			$('#songzify #img').attr('src', urls.max800);
+		}
 	
-	if(sfl.interval){
+	}
+	else{
+
+		//Get more photos
+		sfl.getPhotos().done(function(){
+			sfl.showPhoto();
+		});
+
+	}
+};
+
+sfl.getSongInfo = function(){
+
+	//log('- sfl.getSongInfo() (9637137)');
+	var result = null;
+
+	if(sfl.ready){
+
+		//log('  - sfl.ready (2915163)');
+
+		var $playing = $('.szi-current-song:visible');
+
+		if($playing.length){
+
+			//log('    - $song.length (6985406)');
+			var $song = $playing.find('.szi-song');
+			var $artist = $playing.find('.szi-artist:last');
+			if($song.length && $artist.length && $song.html().length && $artist.html().length){
+				result = {
+					title: $song.html(),
+					artist: $artist.html()
+				};
+				//log('      - sfl.song: ' + JSON.stringify(sfl.song) + ' (5777570)');
+			}
+			else{
+				//log('      - song didn\'t pass test.. (7244368)');
+			}
+		}
+		else {
+			//log('     - NOT $song.length (4306835)');
+		}
+
+	}
+
+	return result;
+
+};
+
+sfl.pollForSongInfo = function(cb){
+	
+	if(!sfl.interval){
 		sfl.interval = setInterval(function(){
 
-			var song = getSongInfo();
-			if(song && !sfl.song && (song.title != sfl.song.title || song.artist != sfl.song.artist)){
-				sfl.song = song;
-				log('- NEW SONG: ' + JSON.stringify(sfl.song) + ' (7479285)');
+			log('interval... (4564773)');
+
+			var song = sfl.getSongInfo();
+			if(song){
+				
+				if(!sfl.song || (JSON.stringify(song) != JSON.stringify(sfl.song))){
+					
+					//Store the song
+					sfl.song = song;
+					log('- !!!!!!!!!!!!!! NEW SONG: ' + JSON.stringify(sfl.song) + ' (7479285)');
+
+					//Ensure the Songza page is off-screen
+					$('#body-delegate').addClass('sfl-songza').css({
+						position: 'absolute',
+						left: '-100000px',
+						top: '-100000px',
+					});
+
+					//Callback
+					cb(sfl.song);
+
+				}
 			}
+
+			//Not returning anything seems to stop it
+			return true;
 
 		}, 1000);
 	}
@@ -84,24 +256,123 @@ sfl.pollForSongInfo = function(){
 
 };
 
+/**
+	Checks Spotify API for this song using the song title and artist name	
+	@param {Object} song (.title, .artist)
+	@return {Object} jQuery Deferred
+*/
+sfl.getSpotifyLink = function(song){
+	log('sfl.getSpotifyLink() (4180730)');
+	var $result = $.Deferred(function($d){
+
+		var url = 'http://ws.spotify.com/search/1/track.json?q={song}';
+
+		$.getJSON(url.replace('{song}', encodeURIComponent(song.title + ' - ' + song.artist))).done(function(data){
+
+
+			log('Spotify returned! (8464420)');
+			//log(JSON.stringify(data));
+
+			//Resolve outer deferred
+			$d.resolve(data);
+
+		});
+
+
+	});
+	return $result;
+};
+
+
+sfl.bindControls = function(){
+
+	//Bind Songza controls
+	var $songza = $('.sfl-songza');
+	var $buttons = $('#songzify .songza button');
+
+	$buttons.click(function(){
+
+		var $btn = $(this);
+		var $controls = $songza.find('.szi-controls');
+		var selector = '';
+
+		switch($btn.data('action')){
+			case 'playpause':
+
+				$btn.toggleClass('on');
+				$controls = $songza.find('.szi-control');
+				if($btn.hasClass('on')){
+					selector = '.szi-play';
+				}
+				else{
+					selector = '.szi-pause';
+				}
+
+				break;
+			case 'skip':
+
+				selector = '.szi-skip-button';
+
+				break;
+			case 'ewskip':
+
+				selector = '.szi-vote-down-button';
+
+				break;
+		}
+
+		//Click Songza's button
+		$controls.find(selector).css({position: 'absolute', top: '20px', left: '20px'}).click();
+
+	});
+
+
+};
 
 $(function(){
 
-	var html = ['<div id="songzify" style="width: 100%; background: black; padding: 10px; color: yellow; ">'];
-	html.push('    <ul class="logs">');
-	html.push('      <li>INSERTED BY CONTENT SCRIPT!!!!! (5250191)</li>')
-	html.push('    </ul>');
-	html.push('<script type="text/javascript">log("hi! (1240518)");</script>');
-	html.push('</div>');
-	$('body').prepend(html.join(''))
+	//Add Songzify container if we're on a Songza.com page (since we're authorized for multiple domains)
+	if(document.location.toString().indexOf('songza.com') != -1){
 
+		$('body').prepend(sfl.ui.container.join(''));
 
-	//sfl.pollForSongInfo();
-	setTimeout(function(){
+		//Start checking for song changes
+		sfl.pollForSongInfo(function(song){
 
-		sfl.el.find('.logs').append('<li>... and den??? (1180318)</li>');
+			//Bind controls
+			sfl.bindControls();
 
-	}, 1000);
+			//If it's a new song,
+			if(song){
 
+				sfl.getSpotifyLink(song).done(function(){
+
+					log('.... INDEED! (9107242)');
+
+				});
+
+			}
+
+		});
+
+		//Get photos...
+		sfl.getPhotos().done(function(data){
+
+			log('.... INDEED 2! (4767809)');
+
+			//Show a photo and request fullscreen
+			sfl.showPhoto();
+			//$('#songzify #img')[0].requestFullScreen();
+
+			//Start a slideshow interval 
+			sfl.slideInterval = setInterval(function(){
+
+				sfl.showPhoto();
+
+			}, 5000);
+
+		});
+		
+	}
 
 });
