@@ -1,4 +1,4 @@
-var sfl = {
+sfl = {
 	ready: false,
 	data: null,
 	song: null,
@@ -14,20 +14,24 @@ var sfl = {
 			'',
 			'   <div class="frame">',
 			'     ',
-			'     <img id="img" src="//www.songzify.com/public/img/clear.gif">',
+			'     <img class="img" src="//www.songzify.com/public/img/clear.gif">',
 			'     ',
 			'   </div>',
 			'',
 			'   <div class="cols">',
 			'	  <div class="songza">',
 			'       ',
-			'       Songza <br><br>',
+			'       <div class="songinfo">',
+			'         <span class="title"></span><br>',
+			'         <span class="text"></span>',
+			'         <span class="artist"></span>',
+			'         <div class="links"></div>',
 			'       ',
-			'       <button data-action="playpause" class="on">Play / Pause</button>',
+			'         <button data-action="playpause" class="on">Play / Pause</button>',
+			'         <button data-action="skip">Skip</button>',
+			'         <button data-action="ewskip">Ew</button>',
 			'        ',
-			'       <button data-action="skip">Skip</button>',
-			'        ',
-			'       <button data-action="ewskip">Ew, Skip</button>',
+			'       </div>',
 			'       ',
 			'     </div>',
 			'	  <div class="spotify">Spotify</div>',
@@ -93,6 +97,19 @@ function log(msg){
 	}
 }
 
+//Shuffle function from http://goo.gl/wu1B7
+sfl.shuffle = function(array){ 
+	var i = array.length;
+	if ( i == 0 ) return false;
+	while ( --i ) {
+		var j = Math.floor( Math.random() * ( i + 1 ) );
+		var tempi = array[i];
+	    var tempj = array[j];
+	    array[i] = tempj;
+	    array[j] = tempi;
+    }
+};
+
 /**
 	Gets photos from Flickr
 	@return {Object} jQuery Deferred
@@ -106,6 +123,7 @@ sfl.getPhotos = function(){
 		if(data && data.photos && data.photos.total && data.photos.total > 0){
 			log('Photos returned from Flickr! (6975966)');
 			sfl.photos = data.photos.photo;
+			sfl.shuffle(sfl.photos);
 			$result.resolve(sfl.photos);
 		}
 
@@ -167,7 +185,19 @@ sfl.showPhoto = function(){
 			//Set the img src
 			log('show this photo! (3285950)');
 			log(JSON.stringify(photo));
-			$('#songzify #img').attr('src', urls.max800);
+			var $img = $('#songzify .img:visible');
+			var $frame = $img.closest('.frame');
+			$img.addClass('faded');
+			setTimeout(function(){
+				$img.hide();
+				$('body').css({backgroundSize: '100% 100%'}).css({background: 'url(' + urls.max1024 + ')'});
+				$frame.append('<img class="img faded new" src="' + urls.max1024 + '"/>');
+				$img.remove();
+				setTimeout(function(){
+					$frame.find('.img.new').removeClass('faded').removeClass('new');
+				}, 1);
+			}, 1000);
+			
 		}
 	
 	}
@@ -225,6 +255,10 @@ sfl.pollForSongInfo = function(cb){
 
 			log('interval... (4564773)');
 
+			//Show logs?
+			var url = document.location.toString();
+			$('#songzify ul.logs').toggleClass('show', (url.indexOf('logs=true') != -1));
+
 			var song = sfl.getSongInfo();
 			if(song){
 				
@@ -232,13 +266,21 @@ sfl.pollForSongInfo = function(cb){
 					
 					//Store the song
 					sfl.song = song;
-					log('- !!!!!!!!!!!!!! NEW SONG: ' + JSON.stringify(sfl.song) + ' (7479285)');
+
+					//Display the song
+					$('#songzify .songinfo').removeClass('linked').find('.title').html(song.title).end().find('.text').html(' by ').end().find('.artist').html(song.artist);
+
+					//Add links to search results
+					var searchLink = ('https://www.google.com/search?q={song}+site%3A{site}').replace('{song}', encodeURIComponent(song.title + ' by ' + song.artist));
+					var spotifyLink = searchLink.replace('{site}', 'spotify.com');
+					var youtubeLink = searchLink.replace('{site}', 'youtube.com');
+					$('#songzify .songinfo').find('.links').html('<a href="' + spotifyLink + '" target="_blank">on Spotify</a><br><a href="' + youtubeLink + '" target="_blank">on YouTube</a>');
 
 					//Ensure the Songza page is off-screen
 					$('#body-delegate').addClass('sfl-songza').css({
 						position: 'absolute',
-						left: '-100000px',
-						top: '-100000px',
+						left: '0px',
+						top: ($(window).height() + 100) + 'px',
 					});
 
 					//Callback
@@ -287,7 +329,8 @@ sfl.getSpotifyLink = function(song){
 sfl.bindControls = function(){
 
 	//Bind the image itself
-	$('#songzify #img').click(function(){
+	/*
+	$('#songzify .img').click(function(){
 
 		var $img = $(this).toggleClass('on');
 		if($img.length){
@@ -299,6 +342,15 @@ sfl.bindControls = function(){
 			}
 		}
 
+	});
+	*/
+
+	//Fade out controls when not in use
+	sfl.controlTimeout = setTimeout(function(){$('#songzify .songinfo').addClass('faded'); }, 5000);
+	$('#songzify').mousemove(function(){
+		clearTimeout(sfl.controlTimeout);
+		$(this).find('.songinfo').removeClass('faded');
+		sfl.controlTimeout = setTimeout(function(){$('#songzify .songinfo').addClass('faded'); }, 5000);
 	});
 
 	//Bind Songza controls
@@ -337,7 +389,7 @@ sfl.bindControls = function(){
 		}
 
 		//Click Songza's button
-		$controls.find(selector).css({position: 'absolute', top: '20px', left: '20px'}).click();
+		$controls.find(selector).click();
 
 	});
 
@@ -384,7 +436,7 @@ $(function(){
 
 				sfl.showPhoto();
 
-			}, 5000);
+			}, 10000);
 
 		});
 		

@@ -1,34 +1,69 @@
 #songzify {
   width: 100%;
+  height: 10000px;
   background: black;
-  padding: 10px;
+  padding: 0 10px 10px 10px;
   color: yellow; }
   #songzify .frame {
     clear: both;
     width: 100%;
-    height: 400px;
     text-align: center; }
-    #songzify .frame #img {
+    #songzify .frame img.img {
       cursor: pointer;
       margin: 0 auto;
-      margin-top: 10px;
-      border: 10px solid white; }
-  #songzify .cols {
-    border: 1px solid white; }
-    #songzify .cols > div {
-      float: left;
-      width: 33%; }
+      margin-top: 0;
+      border: 10px solid white;
+      transition: opacity 1s ease-in-out;
+      -webkit-transition: opacity 1s ease-in-out; }
+      #songzify .frame img.img.faded {
+        opacity: 0.01; }
+  #songzify .cols > div {
+    display: none;
+    float: left;
+    width: 33%; }
+    #songzify .cols > div button {
+      border: none !important; }
       #songzify .cols > div button.on {
         color: blue; }
-    #songzify .cols .spotify {
-      background-color: #505050; }
+  #songzify .cols .songza {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block !important; }
+    #songzify .cols .songza .songinfo {
+      color: #FFF;
+      transition: opacity 1s ease-in-out;
+      -webkit-transition: opacity 1s ease-in-out; }
+      #songzify .cols .songza .songinfo.faded {
+        opacity: 0.001; }
+      #songzify .cols .songza .songinfo .title {
+        font-size: 2em; }
+      #songzify .cols .songza .songinfo .text {
+        font-size: 1.2em; }
+      #songzify .cols .songza .songinfo .artist {
+        font-size: 1.2em; }
+      #songzify .cols .songza .songinfo .links {
+        padding: 10px;
+        margin-bottom: 10px; }
+        #songzify .cols .songza .songinfo .links a {
+          color: #FFC; }
+          #songzify .cols .songza .songinfo .links a:link {
+            color: #FFC; }
+          #songzify .cols .songza .songinfo .links a:visited {
+            color: #FFC; }
+          #songzify .cols .songza .songinfo .links a:hover {
+            color: #FFC; }
+          #songzify .cols .songza .songinfo .links a:active {
+            color: #FFC; }
   #songzify ul.logs {
     clear: both;
-    display: block;
+    display: none;
     position: absolute;
     left: 5px;
     top: 5px;
     width: 420px; }
+    #songzify ul.logs.show {
+      display: block; }
     #songzify ul.logs li {
       color: yellow;
       clear: both; }

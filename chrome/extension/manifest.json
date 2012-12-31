@@ -24,7 +24,7 @@
         "https://www.youtube.com/*"
       ],
       "css": ["styles.css"],
-      "js": ["jquery-1.8.3.min.js", "content.js"],
+      "js": ["jquery-1.8.3.min.js", "underscore-1.4.3.js", "content.js"],
       "run_at": "document_start"
     }
   ],
