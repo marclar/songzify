@@ -12,7 +12,7 @@
       cursor: pointer;
       margin: 0 auto;
       margin-top: 0;
-      border: 10px solid white;
+      border: 0px solid white;
       transition: opacity 1s ease-in-out;
       -webkit-transition: opacity 1s ease-in-out; }
       #songzify .frame img.img.faded {
@@ -31,9 +31,10 @@
     top: 0;
     display: block !important; }
     #songzify .cols .songza .songinfo {
+      margin: 10px;
       color: #FFF;
-      transition: opacity 1s ease-in-out;
-      -webkit-transition: opacity 1s ease-in-out; }
+      transition: opacity 0.5s ease-in-out;
+      -webkit-transition: opacity 0.5s ease-in-out; }
       #songzify .cols .songza .songinfo.faded {
         opacity: 0.001; }
       #songzify .cols .songza .songinfo .title {

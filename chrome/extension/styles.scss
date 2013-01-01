@@ -16,7 +16,7 @@
 			cursor: pointer; 
 			margin: 0 auto; 
 			margin-top: 0; 
-			border: 10px solid white; 
+			border: 0px solid white; 
 
 			transition: opacity 1s ease-in-out;
 			-webkit-transition: opacity 1s ease-in-out;
@@ -57,9 +57,10 @@
 
 			.songinfo {
 
+				margin: 10px; 
 				color: #FFF; 
-				transition: opacity 1s ease-in-out;
-				-webkit-transition: opacity 1s ease-in-out;
+				transition: opacity 0.5s ease-in-out;
+				-webkit-transition: opacity 0.5s ease-in-out;
 
 				&.faded {
 					opacity: 0.001;
