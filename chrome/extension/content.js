@@ -190,8 +190,8 @@ sfl.showPhoto = function(){
 			$img.addClass('faded');
 			setTimeout(function(){
 				$img.hide();
-				$('body').css({backgroundSize: '100% 100%'}).css({background: 'url(' + urls.max1024 + ')'});
-				$frame.append('<img class="img faded new" src="' + urls.max1024 + '"/>');
+				//$('body').css({backgroundSize: '100% 100%'}).css({background: 'url(' + urls.max1024 + ')'});
+				$frame.append('<img class="img faded new" src="' + urls.orig + '"/>');
 				$img.remove();
 				setTimeout(function(){
 					$frame.find('.img.new').removeClass('faded').removeClass('new');
